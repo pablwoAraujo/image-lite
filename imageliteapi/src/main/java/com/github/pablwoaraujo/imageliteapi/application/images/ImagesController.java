@@ -1,6 +1,7 @@
 package com.github.pablwoaraujo.imageliteapi.application.images;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -10,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.github.pablwoaraujo.imageliteapi.domain.entity.Image;
-import com.github.pablwoaraujo.imageliteapi.domain.enums.ImageExtension;
 import com.github.pablwoaraujo.imageliteapi.domain.service.ImageService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ImagesController {
 
     private final ImageService service;
+    private final ImageMapper mapper;
 
     @PostMapping
     public ResponseEntity<String> save(
@@ -35,16 +37,21 @@ public class ImagesController {
         log.info("Content Type: {}", file.getContentType());
         log.info("MediaType: {}", MediaType.valueOf(file.getContentType()));
 
-        Image image = Image.builder()
-                .name(name)
-                .tags(String.join(",", tags))
-                .size(file.getSize())
-                .extension(ImageExtension.valueOf(MediaType.valueOf(file.getContentType())))
-                .file(file.getBytes())
-                .build();
+        Image image = mapper.mapToImage(file, name, tags);
+        Image savedImage = service.save(image);
 
-        service.save(image);
+        URI imageUri = buildImageURL(savedImage);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.created(imageUri).build();
+    }
+
+    private URI buildImageURL(Image image) {
+        String imagePath = "/" + image.getId();
+
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path(imagePath)
+                .build()
+                .toUri();
     }
 }
