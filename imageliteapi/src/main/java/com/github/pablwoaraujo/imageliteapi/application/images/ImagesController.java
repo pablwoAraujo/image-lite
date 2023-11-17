@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -68,6 +69,21 @@ public class ImagesController {
         headers.setContentDispositionFormData(controlName, image.getFileName());
 
         return new ResponseEntity<byte[]>(image.getFile(), headers, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ImageDTO>> search(
+            @RequestParam(value = "extension", required = false, defaultValue = "") String extension,
+            @RequestParam(value = "query", required = false) String query) throws InterruptedException {
+
+        List<Image> images = service.search(ImageExtension.valueOf(extension), query);
+
+        List<ImageDTO> imagesDTO = images.stream().map(image -> {
+            var url = buildImageURL(image);
+            return mapper.imageToDTO(image, url.toString());
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(imagesDTO);
     }
 
     private URI buildImageURL(Image image) {

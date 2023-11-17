@@ -21,4 +21,13 @@ public class ImageMapper {
                 .file(file.getBytes())
                 .build();
     }
+
+    public ImageDTO imageToDTO(Image image, String url) {
+        return ImageDTO.builder()
+                .url(url)
+                .extension(image.getExtension().name())
+                .size(image.getSize())
+                .uploadDate(image.getUploadDate().toLocalDate())
+                .build();
+    }
 }
