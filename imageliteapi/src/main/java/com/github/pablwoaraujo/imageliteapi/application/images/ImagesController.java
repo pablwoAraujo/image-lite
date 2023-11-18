@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -61,12 +62,15 @@ public class ImagesController {
 
         Image image = possibleImage.get();
         ImageExtension extension = image.getExtension();
-        String controlName = "inline; filename=\"" + image.getFileName() + "\"";
 
         HttpHeaders headers = new HttpHeaders();
+        ContentDisposition contentDisposition = ContentDisposition.builder("inline")
+                .filename(image.getFileName())
+                .build();
+
         headers.setContentType(extension.getMediaType());
         headers.setContentLength(image.getSize());
-        headers.setContentDispositionFormData(controlName, image.getFileName());
+        headers.setContentDisposition(contentDisposition);
 
         return new ResponseEntity<byte[]>(image.getFile(), headers, HttpStatus.OK);
     }
@@ -76,7 +80,7 @@ public class ImagesController {
             @RequestParam(value = "extension", required = false, defaultValue = "") String extension,
             @RequestParam(value = "query", required = false) String query) throws InterruptedException {
 
-        List<Image> images = service.search(ImageExtension.valueOf(extension), query);
+        List<Image> images = service.search(ImageExtension.nameOf(extension), query);
 
         List<ImageDTO> imagesDTO = images.stream().map(image -> {
             var url = buildImageURL(image);
@@ -90,7 +94,7 @@ public class ImagesController {
         String imagePath = "/" + image.getId();
 
         return ServletUriComponentsBuilder
-                .fromCurrentRequest()
+                .fromCurrentRequestUri()
                 .path(imagePath)
                 .build()
                 .toUri();
