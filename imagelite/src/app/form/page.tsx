@@ -1,55 +1,41 @@
 "use client"
 
-import { Button, ImagePreview, InputImage, InputTags, InputText, Label, Template, useNotification } from "@/components";
+import { Button, FieldError, ImagePreview, InputImage, InputTags, InputText, Label, Template, useNotification } from "@/components";
 import { useImageService } from "@/resources/image/image.service";
 import { useFormik } from "formik";
 import Link from "next/link";
 import { useState } from "react";
+import { FormProps, formScheme, formValidationScheme } from "./form.Scheme";
 
-interface FormProps {
-  name: string;
-  tags: string[];
-  file: any;
-}
 
 export default function FormPage() {
 
   const [loading, setLoading] = useState<boolean>(false);
   const [imagePreview, setImagePreview] = useState<string>("");
-  const [tags, setTags] = useState<string[]>([]);
 
   const service = useImageService();
   const notification = useNotification();
 
-  const formScheme: FormProps = { name: '', tags: [], file: '' }
   const formik = useFormik<FormProps>({
     initialValues: formScheme,
-    onSubmit: handleSubmit
+    onSubmit: handleSubmit,
+    validationSchema: formValidationScheme
   })
 
   async function handleSubmit(dados: FormProps) {
-    const _file = dados.file;
-    const _name = dados.name.trim();
-    const _tags = tags;
-
-    if (_file == "" || _name == "" || _tags.length == 0) {
-      return
-    }
-
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("file", _file);
-    formData.append("name", _name);
-    for (var i = 0; i < _tags.length; i++) {
-      formData.append('tags', _tags[i]);
+    formData.append("file", dados.file);
+    formData.append("name", dados.name.trim());
+    for (var i = 0; i < dados.tags.length; i++) {
+      formData.append('tags', dados.tags[i]);
     }
 
     await service.save(formData);
 
     setImagePreview('');
     formik.resetForm();
-    setTags([]);
 
     setLoading(false);
     notification.notify("Upload sent successfully!", "success");
@@ -82,12 +68,14 @@ export default function FormPage() {
                     e.preventDefault();
                     formik.setFieldValue("name", e.target.value)
                   }} />
+              <FieldError error={formik.errors.name} />
             </div>
 
             {/*TAGS:*/}
             <div className="grid grid-cols-1">
               <Label htmlFor="tags">Tags *</Label>
-              <InputTags id="tags" setTags={setTags} tags={tags} />
+              <InputTags id="tags" formik={formik} />
+              <FieldError error={formik.errors.tags} />
             </div>
 
             {/*IMAGE:*/}
@@ -97,6 +85,7 @@ export default function FormPage() {
                 <div className="text-center">
                   <ImagePreview imagePreview={imagePreview} />
                   <InputImage id="file" onFileUpload={onFileUpload} />
+                  <FieldError error={formik.errors.file} />
                 </div>
               </div>
             </div>

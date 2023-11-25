@@ -1,4 +1,5 @@
 export { Button } from "./Button";
+export { FieldError } from "./FieldError";
 export { ImageCard } from "./ImageCard";
 export { ImagePreview } from "./ImagePreview";
 export { InputImage } from "./InputImage";

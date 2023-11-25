@@ -1,14 +1,14 @@
-import React, { Dispatch, SetStateAction } from "react";
+import { FormikValues } from "formik";
+import React from "react";
 import { InputText } from ".";
 
 interface InputTagsProps {
     id?: string;
-    tags: string[];
-    setTags: Dispatch<SetStateAction<string[]>>;
+    formik: FormikValues;
 }
 
 export const InputTags: React.FC<InputTagsProps> = ({
-    id, tags, setTags
+    id, formik
 }: InputTagsProps) => {
     function handleKeyDown(e: React.KeyboardEvent<Element>) {
         if (e.key !== 'Enter') return
@@ -16,12 +16,12 @@ export const InputTags: React.FC<InputTagsProps> = ({
         let target = e.target as HTMLInputElement;
         const value = target.value;
 
-        if (!value.trim() || tags.includes(value.trim())) {
+        if (!value.trim() || formik.values.tags.includes(value.trim())) {
             e.preventDefault();
             return
         }
 
-        setTags(tags => [...tags, value.trim()]);
+        formik.setFieldValue("tags", [...formik.values.tags, value.trim()])
 
         target.value = '';
         e.preventDefault();
@@ -29,7 +29,8 @@ export const InputTags: React.FC<InputTagsProps> = ({
 
     function remove(index: number) {
         if (index > -1) {
-            setTags(tags => tags.filter((s, i) => (i != index)))
+            const tags = (formik.values.tags as string[]).filter((s:string, i:number) => (i != index))
+            formik.setFieldValue("tags", tags);
         }
     }
 
@@ -42,7 +43,7 @@ export const InputTags: React.FC<InputTagsProps> = ({
             />
 
             <div className="flex flex-wrap gap-1">
-                {tags.map((tag, index) => (
+                {formik.values.tags.map((tag:string, index:number) => (
                     <div className="flex gap-2 bg-gray-300 rounded-lg px-2 py-1" key={index} >
                         <span>{tag}</span>
                         <span className="flex justify-center text-white bg-gray-700 rounded-full w-6 h-6" onClick={() => { remove(index) }}>&times;</span>
