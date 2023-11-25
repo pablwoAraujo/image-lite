@@ -1,6 +1,6 @@
 import { FormikValues } from "formik";
 import React from "react";
-import { InputText } from ".";
+import { InputText } from "..";
 
 interface InputTagsProps {
     id?: string;
