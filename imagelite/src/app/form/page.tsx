@@ -13,6 +13,8 @@ interface FormProps {
 }
 
 export default function FormPage() {
+
+  const [loading, setLoading] = useState<boolean>(false);
   const [imagePreview, setImagePreview] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
 
@@ -25,12 +27,21 @@ export default function FormPage() {
   })
 
   async function handleSubmit(dados: FormProps) {
-    const formData = new FormData();
-    formData.append("file", dados.file);
-    formData.append("name", dados.name);
+    const _file = dados.file;
+    const _name = dados.name.trim();
+    const _tags = tags;
 
-    for (var i = 0; i < tags.length; i++) {
-      formData.append('tags', tags[i]);
+    if (_file == "" || _name == "" || _tags.length == 0) {
+      return
+    }
+
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("file", _file);
+    formData.append("name", _name);
+    for (var i = 0; i < _tags.length; i++) {
+      formData.append('tags', _tags[i]);
     }
 
     await service.save(formData);
@@ -38,6 +49,8 @@ export default function FormPage() {
     setImagePreview('');
     formik.resetForm();
     setTags([]);
+
+    setLoading(false);
   }
 
   function onFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
@@ -50,14 +63,14 @@ export default function FormPage() {
   }
 
   return (
-    <Template>
+    <Template loading={loading}>
       <section className="flex flex-col items-center justify-center my-5">
         <h5 className="mt-3 mb-10 text-3xl font-extrabold tracking-tight text-gray-900">Nova Imagem</h5>
         <form onSubmit={formik.handleSubmit}>
           <div className="flex flex-col gap-3">
             {/*NAME:*/}
             <div className="grid grid-cols-1">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">Name *</Label>
               <InputText
                 id="name"
                 value={formik.values.name}
@@ -71,17 +84,17 @@ export default function FormPage() {
 
             {/*TAGS:*/}
             <div className="grid grid-cols-1">
-              <Label htmlFor="tags">Tags</Label>
+              <Label htmlFor="tags">Tags *</Label>
               <InputTags id="tags" setTags={setTags} tags={tags} />
             </div>
 
             {/*IMAGE:*/}
             <div className="grid grid-cols-1">
-              <Label htmlFor="file">Image</Label>
+              <Label htmlFor="file">Image *</Label>
               <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                 <div className="text-center">
                   <ImagePreview imagePreview={imagePreview} />
-                  <InputImage id="file" onFileUpload={onFileUpload}/>
+                  <InputImage id="file" onFileUpload={onFileUpload} />
                 </div>
               </div>
             </div>

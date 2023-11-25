@@ -37,7 +37,7 @@ export const InputTags: React.FC<InputTagsProps> = ({
         <div className="tags-input-container flex gap-2 flex-wrap flex-col">
             <InputText
                 id={id}
-                placeholder="press enter to add"
+                placeholder="type and press enter to add"
                 onKeyDown={(e) => handleKeyDown(e)}
             />
 
