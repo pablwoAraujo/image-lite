@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, ImagePreview, InputImage, InputTags, InputText, Label, Template } from "@/components";
+import { Button, ImagePreview, InputImage, InputTags, InputText, Label, Template, useNotification } from "@/components";
 import { useImageService } from "@/resources/image/image.service";
 import { useFormik } from "formik";
 import Link from "next/link";
@@ -19,6 +19,7 @@ export default function FormPage() {
   const [tags, setTags] = useState<string[]>([]);
 
   const service = useImageService();
+  const notification = useNotification();
 
   const formScheme: FormProps = { name: '', tags: [], file: '' }
   const formik = useFormik<FormProps>({
@@ -51,6 +52,7 @@ export default function FormPage() {
     setTags([]);
 
     setLoading(false);
+    notification.notify("Upload sent successfully!", "success");
   }
 
   function onFileUpload(event: React.ChangeEvent<HTMLInputElement>) {

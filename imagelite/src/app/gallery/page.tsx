@@ -1,6 +1,6 @@
 "use client"
 
-import { Template, ImageCard, Button, InputText } from "@/components";
+import { Template, ImageCard, Button, InputText, useNotification } from "@/components";
 import { Image } from "@/resources/image/image.resource";
 import { useImageService } from "@/resources/image/image.service";
 import { useState } from "react";
@@ -9,6 +9,8 @@ import Link from "next/link";
 export default function GalleryPage() {
 
   const useService = useImageService();
+  const notification = useNotification();
+
   const [images, setImages] = useState<Image[]>([])
   const [query, setQuery] = useState<string>("")
   const [extension, setExtension] = useState<string>("")
@@ -19,6 +21,8 @@ export default function GalleryPage() {
     const result = await useService.search(query, extension);
     setImages(result);
     setLoading(false);
+
+    if (result.length == 0) notification.notify("No result found!", "warning");
   }
 
   function renderImageCard(image: Image) {

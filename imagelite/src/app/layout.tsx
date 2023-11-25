@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Roboto } from 'next/font/google'
+import "react-toastify/ReactToastify.min.css"
 import './globals.css'
 
 const roboto = Roboto({ subsets: ['latin'], weight: "300" })
