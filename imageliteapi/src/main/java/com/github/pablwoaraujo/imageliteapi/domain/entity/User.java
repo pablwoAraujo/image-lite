@@ -18,7 +18,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table
+@Table(name = "auth_user")
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @NoArgsConstructor
@@ -26,17 +26,17 @@ import lombok.NoArgsConstructor;
 @Builder
 public class User {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private String id;
-  @Column
-  private String name;
-  @Column
-  private String email;
-  @Column
-  private String password;
-  @CreatedDate
-  @Column(name = "created_at")
-  private LocalDateTime createdAt;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+    @Column
+    private String name;
+    @Column
+    private String email;
+    @Column
+    private String password;
+    @CreatedDate
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
 }
