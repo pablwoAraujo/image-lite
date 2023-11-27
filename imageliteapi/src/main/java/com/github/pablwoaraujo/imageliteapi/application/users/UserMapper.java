@@ -1,0 +1,17 @@
+package com.github.pablwoaraujo.imageliteapi.application.users;
+
+import org.springframework.stereotype.Component;
+
+import com.github.pablwoaraujo.imageliteapi.domain.entity.User;
+
+@Component
+public class UserMapper {
+
+    public User mapToUser(UserDTO dto) {
+        return User.builder()
+                .email(dto.getEmail())
+                .name(dto.getName())
+                .password(dto.getPassword())
+                .build();
+    }
+}
