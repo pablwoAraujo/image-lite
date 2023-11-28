@@ -1,11 +1,28 @@
 "use client"
 
-import { Button, InputText, Label, Template } from "@/components"
+import { Button, FieldError, InputText, Label, Template } from "@/components"
+import { useFormik } from "formik";
 import { useState } from "react"
+import { LoginForm, formScheme, validationScheme } from "./formScheme";
 
 export default function LoginPage() {
   const [loading, setLoadin] = useState<boolean>(false);
   const [newUserState, setNewUserState] = useState<boolean>(true);
+
+  async function onSubmit(values: LoginForm) {
+    console.log(values);
+  }
+
+  const { values, handleChange, handleSubmit, errors, resetForm } = useFormik<LoginForm>({
+    initialValues: formScheme,
+    validationSchema: validationScheme,
+    onSubmit: onSubmit
+  })
+
+  function changeForm(){
+    resetForm();
+    setNewUserState(!newUserState);
+  }
 
   return (
     <Template>
@@ -17,7 +34,7 @@ export default function LoginPage() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-2">
+          <form className="space-y-2" onSubmit={handleSubmit}>
             {
               newUserState &&
               <>
@@ -25,7 +42,8 @@ export default function LoginPage() {
                   <Label htmlFor="name">Name: </Label>
                 </div>
                 <div className="mt-2">
-                  <InputText style="w-full" id="name" />
+                  <InputText style="w-full" id="name" value={values.name} onChange={handleChange}/>
+                  <FieldError error={errors.name}/>
                 </div>
               </>
             }
@@ -33,14 +51,16 @@ export default function LoginPage() {
               <Label htmlFor="email">Email: </Label>
             </div>
             <div className="mt-2">
-              <InputText style="w-full" id="email" type="email" />
+              <InputText style="w-full" id="email" type="email" value={values.email} onChange={handleChange}/>
+              <FieldError error={errors.email}/>
             </div>
 
             <div>
               <Label htmlFor="password">Password: </Label>
             </div>
             <div className="mt-2">
-              <InputText style="w-full" id="password" type="password" />
+              <InputText style="w-full" id="password" type="password" value={values.password} onChange={handleChange}/>
+              <FieldError error={errors.password}/>
             </div>
 
             {
@@ -50,7 +70,8 @@ export default function LoginPage() {
                   <Label htmlFor="passwordMatch">Repeat Password: </Label>
                 </div>
                 <div className="mt-2">
-                  <InputText style="w-full" id="passwordMatch" />
+                  <InputText style="w-full" id="passwordMatch" type="password" value={values.passwordMatch} onChange={handleChange}/>
+                  <FieldError error={errors.passwordMatch}/>
                 </div>
               </>
             }
@@ -62,7 +83,7 @@ export default function LoginPage() {
                   <Button type="button"
                     label="Cancel"
                     style="bg-red-700 hover:bg-red-500 mx-2"
-                    onClick={event => setNewUserState(false)} />
+                    onClick={changeForm} />
                 </>
               ) : (
                 <>
@@ -70,7 +91,7 @@ export default function LoginPage() {
                   <Button type="button"
                     label="Sign Up"
                     style="bg-red-700 hover:bg-red-500 mx-2"
-                    onClick={event => setNewUserState(true)} />
+                    onClick={changeForm} />
                 </>
               )}
             </div>
