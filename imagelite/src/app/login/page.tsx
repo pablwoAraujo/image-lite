@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import { useState } from "react"
 import { LoginForm, formScheme, validationScheme } from "./formScheme";
 import { useAuth } from "@/resources";
-import { AccessToken, Credentials } from "@/resources/user/user.resource";
+import { AccessToken, Credentials, User } from "@/resources/user/user.resource";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -28,8 +28,19 @@ export default function LoginPage() {
         const message = error?.message;
         notification.notify(message, "error");
       }
+    } else {
+      const userRegistration: User = { name: values.name ,email: values.email, password: values.password };
+      try {
+        await auth.register(userRegistration);
+        resetForm();
+        changeFormState();
+        
+        notification.notify("Successfully Registered User.", "success");
+      } catch (error: any){
+        const message = error?.message;
+        notification.notify(message, "error");
+      }
     }
-    console.log(values);
   }
 
   const { values, handleChange, handleSubmit, errors, resetForm } = useFormik<LoginForm>({
@@ -38,7 +49,7 @@ export default function LoginPage() {
     onSubmit: onSubmit
   })
 
-  function changeForm() {
+  function changeFormState() {
     resetForm();
     setNewUserState(!newUserState);
   }
@@ -102,7 +113,7 @@ export default function LoginPage() {
                   <Button type="button"
                     label="Cancel"
                     style="bg-red-700 hover:bg-red-500 mx-2"
-                    onClick={changeForm} />
+                    onClick={changeFormState} />
                 </>
               ) : (
                 <>
@@ -110,7 +121,7 @@ export default function LoginPage() {
                   <Button type="button"
                     label="Sign Up"
                     style="bg-red-700 hover:bg-red-500 mx-2"
-                    onClick={changeForm} />
+                    onClick={changeFormState} />
                 </>
               )}
             </div>

@@ -1,4 +1,4 @@
-import { AccessToken, Credentials } from "./user.resource";
+import { AccessToken, Credentials, User } from "./user.resource";
 
 class AuthService{
   baseURL: string = "http://localhost:8080/v1/users";
@@ -19,6 +19,21 @@ class AuthService{
     }
 
     return await response.json();
+  }
+
+  async register(user: User): Promise<void> {
+    const response = await fetch(this.baseURL, {
+      method: "POST",
+      body: JSON.stringify(user),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (response.status == 409) {
+      const responseError = await response.json();
+      throw new Error(responseError.error);
+    }
   }
 }
 
