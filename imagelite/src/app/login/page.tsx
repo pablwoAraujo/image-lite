@@ -22,21 +22,22 @@ export default function LoginPage() {
 
       try {
         const accessToken: AccessToken = await auth.authenticate(credentials);
+        auth.initSession(accessToken);
+        
         router.push("/gallery")
-
-      } catch (error: any){
+      } catch (error: any) {
         const message = error?.message;
         notification.notify(message, "error");
       }
     } else {
-      const userRegistration: User = { name: values.name ,email: values.email, password: values.password };
+      const userRegistration: User = { name: values.name, email: values.email, password: values.password };
       try {
         await auth.register(userRegistration);
         resetForm();
         changeFormState();
-        
+
         notification.notify("Successfully Registered User.", "success");
-      } catch (error: any){
+      } catch (error: any) {
         const message = error?.message;
         notification.notify(message, "error");
       }
