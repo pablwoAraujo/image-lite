@@ -25,6 +25,7 @@ export default function LoginPage() {
         auth.initSession(accessToken);
         
         router.push("/gallery")
+        router.refresh();
       } catch (error: any) {
         const message = error?.message;
         notification.notify(message, "error");
@@ -73,7 +74,7 @@ export default function LoginPage() {
                   <Label htmlFor="name">Name: </Label>
                 </div>
                 <div className="mt-2">
-                  <InputText style="w-full" id="name" value={values.name} onChange={handleChange} />
+                  <InputText style="w-full" id="name" value={values.name} onChange={handleChange} autoComplete="given-name"/>
                   <FieldError error={errors.name} />
                 </div>
               </>
@@ -82,7 +83,7 @@ export default function LoginPage() {
               <Label htmlFor="email">Email: </Label>
             </div>
             <div className="mt-2">
-              <InputText style="w-full" id="email" type="email" value={values.email} onChange={handleChange} />
+              <InputText style="w-full" id="email" type="email" value={values.email} onChange={handleChange} autoComplete="on"/>
               <FieldError error={errors.email} />
             </div>
 
@@ -90,7 +91,7 @@ export default function LoginPage() {
               <Label htmlFor="password">Password: </Label>
             </div>
             <div className="mt-2">
-              <InputText style="w-full" id="password" type="password" value={values.password} onChange={handleChange} />
+              <InputText style="w-full" id="password" type="password" value={values.password} onChange={handleChange} autoComplete="current-password"/>
               <FieldError error={errors.password} />
             </div>
 
@@ -101,7 +102,7 @@ export default function LoginPage() {
                   <Label htmlFor="passwordMatch">Repeat Password: </Label>
                 </div>
                 <div className="mt-2">
-                  <InputText style="w-full" id="passwordMatch" type="password" value={values.passwordMatch} onChange={handleChange} />
+                  <InputText style="w-full" id="passwordMatch" type="password" value={values.passwordMatch} onChange={handleChange} autoComplete="new-password"/>
                   <FieldError error={errors.passwordMatch} />
                 </div>
               </>

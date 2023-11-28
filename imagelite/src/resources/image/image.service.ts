@@ -32,6 +32,19 @@ class ImageService {
     return response.headers.get('location') ?? ''
   }
 
+  async find(src: string): Promise<string> {
+    const userSession = this.auth.getUserSession();
+
+    const response = await fetch(`http://localhost:8080/v1/images/${src}`, {
+      method: 'GET',
+      headers: {
+        "Authorization": `Bearer ${userSession?.accesToken}`
+      }
+    })
+
+    return response.headers.get('location') ?? ''
+  }
+
 }
 
 export const useImageService = () => new ImageService();

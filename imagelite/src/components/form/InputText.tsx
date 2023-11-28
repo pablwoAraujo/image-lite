@@ -6,6 +6,7 @@ interface InputTextProps {
   value?: string;
   style?: string;
   placeholder?: string;
+  autoComplete?: string;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown?: (event: React.KeyboardEvent) => void;
 }

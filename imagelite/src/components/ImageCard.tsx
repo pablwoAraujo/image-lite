@@ -1,3 +1,6 @@
+import { useAuth } from "@/resources";
+import { useEffect, useState } from "react";
+
 interface ImageCardProps {
   title?: string;
   size?: number;
@@ -9,12 +12,42 @@ interface ImageCardProps {
 export const ImageCard: React.FC<ImageCardProps> = ({ title, size, dataUpload, src, extension }: ImageCardProps) => {
 
   function download() {
-    window.open(src, "_blank");
+    let objectUrl = window.URL.createObjectURL(downloadImage)
+    window.open(objectUrl, "_blank");
   }
+
+  const [imagesString, setImagesString] = useState<string>("");
+  const [downloadImage, setDownloadImage] = useState<Blob>(new Blob([""], { type: '' }));
+
+  const userSession = useAuth().getUserSession();
+
+  const getBase64Image = async (res: { blob: () => any; }) => {
+    const blob = await res.blob();
+    const reader = new FileReader();
+
+    await new Promise((resolve, reject) => {
+      reader.onload = resolve;
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+    setDownloadImage(blob);
+    return reader.result;
+  };
+
+  useEffect(() => {
+    fetch(`${src}`, {
+      headers: {
+        "Authorization": `Bearer ${userSession?.accesToken}`
+      }
+    })
+      .then(getBase64Image)
+      .then(imgString => setImagesString((imgString ? imgString.toString() : "")));
+  }, []);
 
   return (
     <div className="card relative bg-white rounded-md shadow-md transition-transform ease-in duration-300 transform hover:shadow-lg hover:-translate-y-2">
-      <img src={src} className="h-56 w-full object-cover rounded-t-md" alt={title} onClick={download} />
+      <img src={imagesString} className="h-56 w-full object-cover rounded-t-md" alt={title} onClick={download} />
       <div className="card-body p-4">
         <div className="flex flex-column justify-between">
           <h5 className="text-xl font-semibold mb-2 text-gray-600">{title}</h5>
