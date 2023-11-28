@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.github.pablwoaraujo.imageliteapi.domain.AccessToken;
 import com.github.pablwoaraujo.imageliteapi.domain.entity.User;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +37,18 @@ public class JwtService {
                 .compact();
 
         return new AccessToken(token);
+    }
+
+    public String getEmailFromToken(String tokenJwt) {
+        try {
+            return Jwts.parser().verifyWith(keyGenerator.getKey())
+                    .build()
+                    .parseSignedClaims(tokenJwt)
+                    .getPayload()
+                    .getSubject();
+        } catch (JwtException e) {
+            throw new InvalidTokenException(e.getMessage());
+        }
     }
 
     private Date generateExpirationDate() {

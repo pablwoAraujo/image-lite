@@ -8,13 +8,23 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.github.pablwoaraujo.imageliteapi.application.jwt.JwtService;
+import com.github.pablwoaraujo.imageliteapi.config.filter.JwtFilter;
+import com.github.pablwoaraujo.imageliteapi.domain.service.UserService;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Bean
+    public JwtFilter jwtFilter(JwtService jwtService, UserService userService) {
+        return new JwtFilter(jwtService, userService);
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -22,7 +32,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configure(http))
@@ -30,6 +40,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/v1/users/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
