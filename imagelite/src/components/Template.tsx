@@ -11,9 +11,9 @@ interface TemplateProps {
 
 export const Template: React.FC<TemplateProps> = ({ children, loading = false }: TemplateProps) => {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Header />
-      <div className={`${loading ? 'animate-pulse' : ''} container mx-auto mt-8 px-4`}>
+      <div className={`${loading ? 'animate-pulse' : ''} container mx-auto mt-8 px-4 flex-1`}>
         {loading && <Spinner />}
         {children}
       </div>
@@ -26,7 +26,7 @@ export const Template: React.FC<TemplateProps> = ({ children, loading = false }:
         closeOnClick={true}
         pauseOnHover={true}
       />
-    </>
+    </div>
   )
 }
 
