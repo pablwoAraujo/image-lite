@@ -1,3 +1,6 @@
+import { useAuth } from "@/resources";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { ToastContainer } from "react-toastify";
 
@@ -43,10 +46,34 @@ const Spinner: React.FC = () => {
 }
 
 const Header: React.FC = () => {
+  const auth = useAuth();
+  const router = useRouter();
+
+  function logout() {
+    auth.invalidateSession();
+    router.push("/login");
+  }
+
   return (
     <header className="bg-indigo-950 text-white py-3">
       <div className="container mx-auto flex justify-between items-center px-4">
-        <h1 className="text-3xl font-bold">ImageLite</h1>
+        <Link href={"/gallery"}>
+          <h1 className="text-3xl font-bold">ImageLite</h1>
+        </Link>
+        {auth.isSessionValid() ?
+          (
+            <div className="flex items-center">
+              <div className="relative">
+                <span className="w-64 py-3 px-6 text-md">
+                  Olá, {auth.getUserSession()?.name}
+                </span>
+                <span className="w-64 py-3 px-6 text-sm">
+                  <a href="#" onClick={logout}>Logout</a>
+                </span>
+              </div>
+            </div>
+          ) : false
+        }
       </div>
     </header>
   )
@@ -56,7 +83,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-indigo-950 text-white py-4 mt-8">
       <div className="container mx-auto text-center">
-        Desenvolvido por Pablwo Araujo
+        Desenvolvido por <Link href={"https://github.com/pablwoAraujo"}>Pablwo Araujo</Link>
       </div>
     </footer>
   )
