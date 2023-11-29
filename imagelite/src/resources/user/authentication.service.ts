@@ -53,14 +53,17 @@ class AuthService {
   }
 
   getUserSession(): UserSessionToken | null {
-    const authString = localStorage.getItem(AuthService.AUTH_PARAM);
+    if (typeof window !== "undefined") {
+      let authString = localStorage.getItem(AuthService.AUTH_PARAM);
 
-    if (!authString) {
-      return null;
+      if (!authString) {
+        return null;
+      }
+
+      const token: UserSessionToken = JSON.parse(authString);
+      return token;
     }
-
-    const token: UserSessionToken = JSON.parse(authString);
-    return token;
+    return null;
   }
 
   setUserSession(userSessionToken: UserSessionToken) {
