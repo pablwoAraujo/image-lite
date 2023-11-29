@@ -1,6 +1,7 @@
+# Default / Dev
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5433/imagelite
+    url: jdbc:postgresql://localhost:5432/imagelite
     username: postgres
     password: postgres
   jpa: 
@@ -12,3 +13,12 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
+
+# Production
+---
+spring:
+  config:
+    activate:
+      on-profile: production
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST}:5432/imagelite

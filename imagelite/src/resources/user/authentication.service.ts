@@ -2,7 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import { AccessToken, Credentials, User, UserSessionToken } from "./user.resource";
 
 class AuthService {
-  baseURL: string = "http://localhost:8080/v1/users";
+  baseURL: string = process.env.NEXT_PUBLIC_API_URL + '/v1/users';
 
   static AUTH_PARAM: string = "_auth";
 
